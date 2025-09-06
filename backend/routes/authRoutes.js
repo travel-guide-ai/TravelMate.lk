@@ -1,9 +1,14 @@
-const express = require('express');
+import express from "express";
+import { registerUser } from "../controllers/authController.js";
+
 const router = express.Router();
 
-// Example route: GET /api/auth/test
-router.get('/test', (req, res) => {
-  res.json({ message: 'Auth route working!' });
+// Test route
+router.get("/test", (req, res) => {
+  res.json({ message: "Auth route working!" });
 });
 
-module.exports = router;
+// Register route
+router.post("/register", registerUser);
+
+export default router;
