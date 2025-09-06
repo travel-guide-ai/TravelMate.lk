@@ -1,54 +1,69 @@
 
+
 import Header from './components/Header';
 import FeaturedCarousel from './components/FeaturedCarousel';
 import GlobalSearchBar from './components/GlobalSearchBar';
 import CategoriesPromotions from './components/CategoriesPromotions';
 import Footer from './components/Footer';
 import { Button } from '@/components/ui/button';
+import React, { useEffect } from 'react';
+
 
 function App() {
+  // Hero slideshow animation using inline style and React state
+  const heroImages = [
+    "http://static.photos/travel/1200x630/1",
+    "http://static.photos/travel/1200x630/2",
+    "http://static.photos/travel/1200x630/3",
+    "http://static.photos/travel/1200x630/4",
+  ];
+  const [bgIndex, setBgIndex] = React.useState(0);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setBgIndex((i) => (i + 1) % heroImages.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50">
+    <div className="min-h-screen bg-white">
       <Header />
-      <main className="flex-1" tabIndex={-1}>
-        {/* Hero Section */}
-        <section className="relative bg-gradient-to-r from-blue-600 to-blue-400 text-white py-20 px-6">
-          <div className="max-w-7xl mx-auto text-center">
-            <h1 className="text-5xl md:text-6xl font-extrabold mb-6 drop-shadow-lg">
-              Discover Your Next Adventure
-            </h1>
-            <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto opacity-90">
-              Explore breathtaking destinations, create unforgettable itineraries, and travel with confidence.
-            </p>
-            <div className="flex justify-center gap-4">
-              <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100">
-                Get Started
-              </Button>
-              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-blue-600">
-                Learn More
-              </Button>
-            </div>
+      {/* Hero Section with Slideshow */}
+      <section
+        className="relative h-[80vh] flex items-center justify-center bg-cover bg-center transition-all duration-1000"
+        style={{ backgroundImage: `url('${heroImages[bgIndex]}')` }}
+      >
+        <div className="absolute inset-0 bg-black/30"></div>
+        <div className="container mx-auto px-4 z-10 relative">
+          <div className="max-w-4xl mx-auto text-center mb-12">
+            <h1 className="text-4xl md:text-6xl font-bold text-white mb-4">Discover Your Next Adventure</h1>
+            <p className="text-xl text-white/90 mb-8">AI-powered travel planning for your perfect getaway</p>
           </div>
-          <div className="absolute inset-0 bg-black/10"></div>
-        </section>
+          {/* AI Optimized Search Bar */}
+          <div className="max-w-2xl mx-auto">
+            <GlobalSearchBar />
+          </div>
+        </div>
+      </section>
 
-        {/* Featured Destinations */}
-        <section className="py-16 px-6">
-          <div className="max-w-7xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-800 mb-12">
-              Featured Destinations
-            </h2>
-            <FeaturedCarousel />
+      {/* Featured Destinations */}
+      <section className="py-16 bg-gray-50">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 mb-2">Featured Destinations</h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">Explore our most popular travel spots curated by our community</p>
           </div>
-        </section>
+          <FeaturedCarousel />
+        </div>
+      </section>
 
-        {/* Categories and Promotions */}
-        <section className="py-16 px-6 bg-gray-50">
-          <div className="max-w-7xl mx-auto">
-            <CategoriesPromotions />
-          </div>
-        </section>
-      </main>
+      {/* Categories & Promotions */}
+      <section className="py-16">
+        <div className="container mx-auto px-4">
+          <CategoriesPromotions />
+        </div>
+      </section>
+
       <Footer />
     </div>
   );

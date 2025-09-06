@@ -1,43 +1,61 @@
-
-import React, { useState } from 'react';
+import React from 'react';
+import { ArrowRight } from 'lucide-react';
 
 const destinations = [
-  { id: 1, name: 'Maldives', image: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80', description: 'Tropical paradise with crystal clear waters.' },
-  { id: 2, name: 'Sri Lanka', image: 'https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=800&q=80', description: 'Island of adventure, culture, and nature.' },
-  { id: 3, name: 'Thailand', image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80', description: 'Vibrant cities and stunning beaches.' },
+  {
+    name: 'Bali, Indonesia',
+    image: 'http://static.photos/travel/640x360/10',
+    description: 'Tropical paradise with lush jungles and pristine beaches',
+    price: '$899',
+    delay: 0,
+  },
+  {
+    name: 'Kyoto, Japan',
+    image: 'http://static.photos/travel/640x360/11',
+    description: 'Ancient temples and beautiful cherry blossoms',
+    price: '$1299',
+    delay: 100,
+  },
+  {
+    name: 'Santorini, Greece',
+    image: 'http://static.photos/travel/640x360/12',
+    description: 'Whitewashed buildings with stunning sea views',
+    price: '$1099',
+    delay: 200,
+  },
+  {
+    name: 'Banff, Canada',
+    image: 'http://static.photos/travel/640x360/13',
+    description: 'Majestic mountains and crystal-clear lakes',
+    price: '$799',
+    delay: 300,
+  },
 ];
 
 export default function FeaturedCarousel() {
-  const [current, setCurrent] = useState(0);
-  const next = () => setCurrent((current + 1) % destinations.length);
-  const prev = () => setCurrent((current - 1 + destinations.length) % destinations.length);
-
   return (
-    <section className="flex items-center justify-center gap-6 my-10" aria-label="Featured destinations">
-      <button
-        className="bg-white border-2 border-blue-500 text-blue-500 rounded-full w-11 h-11 text-2xl flex items-center justify-center shadow hover:bg-blue-500 hover:text-white transition"
-        onClick={prev}
-        aria-label="Previous destination"
-      >
-        &#60;
-      </button>
-      <div className="text-center bg-white rounded-xl shadow-lg px-8 py-6 min-w-[280px] max-w-xs outline-none" tabIndex={0} aria-live="polite">
-        <img
-          src={destinations[current].image}
-          alt={destinations[current].name + ' - ' + destinations[current].description}
-          loading="lazy"
-          className="w-full max-w-xs h-48 object-cover rounded-lg shadow mb-3"
-        />
-        <h3 className="text-xl font-semibold text-blue-600 mb-1">{destinations[current].name}</h3>
-        <p className="text-gray-600 text-base">{destinations[current].description}</p>
-      </div>
-      <button
-        className="bg-white border-2 border-blue-500 text-blue-500 rounded-full w-11 h-11 text-2xl flex items-center justify-center shadow hover:bg-blue-500 hover:text-white transition"
-        onClick={next}
-        aria-label="Next destination"
-      >
-        &#62;
-      </button>
-    </section>
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      {destinations.map((dest, i) => (
+        <div
+          key={dest.name}
+          className="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition"
+        >
+          <div
+            className="h-48 bg-cover bg-center"
+            style={{ backgroundImage: `url('${dest.image}')` }}
+          ></div>
+          <div className="p-6">
+            <h3 className="text-xl font-semibold mb-2">{dest.name}</h3>
+            <p className="text-gray-600 mb-4">{dest.description}</p>
+            <div className="flex justify-between items-center">
+              <span className="text-blue-600 font-medium">From {dest.price}</span>
+              <button className="text-blue-500 hover:text-blue-700">
+                <ArrowRight className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
   );
 }

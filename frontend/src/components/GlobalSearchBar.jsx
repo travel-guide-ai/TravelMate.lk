@@ -1,42 +1,25 @@
+import React from "react";
+import { Search, Zap } from "lucide-react";
 
-import React from 'react';
-import { Button } from '@/components/ui/button';
-
-export default function GlobalSearchBar() {
-  return (
-    <form className="flex justify-center my-8" role="search" aria-label="Global search">
-      <input
-        type="search"
-        placeholder="Search destinations, itineraries..."
-        aria-label="Search destinations, itineraries"
-        name="search"
-        autoComplete="off"
-        className="w-80 max-w-full px-5 py-3 border-2 border-blue-500 border-r-0 rounded-l-full outline-none text-base bg-blue-50 focus:border-blue-700"
-      />
-      <Button type="submit" aria-label="Search" className="rounded-l-none rounded-r-full px-6 py-3">
-        <span role="img" aria-label="Search icon">🔍</span> Search
-      </Button>
-    </form>
-  );
+function GlobalSearchBar() {
+	return (
+		<div className="bg-white rounded-2xl p-1 search-shadow">
+			<div className="flex items-center">
+				<input
+					type="text"
+					placeholder="Where do you want to go? Try '2 week Europe trip' or 'beach resorts in Bali'..."
+					className="flex-grow px-6 py-4 rounded-2xl focus:outline-none text-gray-700 bg-transparent"
+				/>
+				<button className="bg-blue-600 text-white p-3 rounded-xl m-1 hover:bg-blue-700 transition">
+					<Search className="w-6 h-6" />
+				</button>
+			</div>
+			<div className="px-4 py-2 text-sm text-gray-500 flex items-center">
+				<Zap className="w-4 h-4 mr-2 text-yellow-500" />
+				<span>AI Suggestions: Romantic Getaways | Family Vacations | Adventure Tours</span>
+			</div>
+		</div>
+	);
 }
 
-// Removed CSS import as per the requirement
-
-// Refactored form class to use Tailwind CSS
-<form className="flex justify-center my-8" role="search" aria-label="Global search">
-  <input
-    type="search"
-    placeholder="Search destinations, itineraries..."
-    aria-label="Search destinations, itineraries"
-    name="search"
-    autoComplete="off"
-    className="w-80 max-w-full px-5 py-3 border-2 border-blue-500 border-r-0 rounded-l-full outline-none text-base bg-blue-50 focus:border-blue-700"
-  />
-  <button
-    type="submit"
-    aria-label="Search"
-    className="px-6 py-3 bg-blue-600 text-white rounded-r-full text-base font-medium hover:bg-blue-700 transition flex items-center gap-2"
-  >
-    <span role="img" aria-label="Search icon">🔍</span> Search
-  </button>
-</form>
+export default GlobalSearchBar;
