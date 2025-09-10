@@ -159,7 +159,6 @@ function Home() {
                   <span className="text-white">Start Planning</span>
                   <svg className="w-5 h-5 ml-1 animate-move-right" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
                 </a>
-                <a href="#about" className="btn bg-white/90 text-blue-700 px-8 py-3 rounded-full font-semibold shadow hover:bg-white transition text-lg">Why TravelMate?</a>
                 <a
                   href="#about"
                   className="btn border-2 border-blue-500 bg-gradient-to-r from-white/90 to-blue-50 text-blue-700 px-8 py-3 rounded-full font-semibold shadow-md text-lg flex items-center gap-2 transition-all duration-300 hover:bg-blue-50 hover:text-blue-800 hover:scale-105 focus:ring-4 focus:ring-blue-200"
