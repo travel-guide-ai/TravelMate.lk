@@ -1,4 +1,4 @@
-import { preferences, ref } from "joi";
+import Joi from "joi";
 import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema(

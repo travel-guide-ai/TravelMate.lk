@@ -1,71 +1,61 @@
 import React, { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Menu } from 'lucide-react';
 
 const navLinks = [
-  { name: 'Home', href: '#', current: true },
-  { name: 'Destinations', href: '#destinations' },
-  { name: 'Itineraries', href: '#itineraries' },
-  { name: 'Contact', href: '#contact' },
+  { name: 'Destinations', href: '#' },
+  { name: 'Experiences', href: '#' },
+  { name: 'Deals', href: '#' },
+  { name: 'About', href: '#' },
 ];
 
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   return (
-    <header className="sticky top-0 z-50 bg-gradient-to-r from-blue-700 to-blue-400 shadow-lg">
-      <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-4">
-        <div className="flex items-center gap-2">
-          <span className="inline-block bg-white/20 rounded-full p-2">
-            <svg width="32" height="32" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="text-white"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3l2.09 6.26L21 9.27l-5 4.87L17.18 21 12 17.27 6.82 21 8 14.14l-5-4.87 6.91-1.01z" /></svg>
-          </span>
-          <span className="text-2xl font-extrabold tracking-tight text-white drop-shadow-sm select-none" tabIndex={0} aria-label="TravelMate.lk Home">
-            TravelMate.lk
-          </span>
+    <nav className="sticky top-0 z-50 bg-gradient-to-r from-[#1e293b] via-[#334155] to-[#1e293b] shadow-lg border-b border-gray-900/80">
+      <div className="container mx-auto px-4 py-3 flex justify-between items-center">
+        <a href="#" className="flex items-center space-x-3 group">
+          <img src="/src/assets/images/logo1.png" alt="TravelMate.lk Logo" className="w-10 h-10 object-contain drop-shadow group-hover:scale-110 transition-transform duration-200" />
+          <span className="text-2xl font-extrabold text-white tracking-tight group-hover:text-blue-300 transition-colors">TravelMate.lk</span>
+        </a>
+        <div className="hidden md:flex space-x-8">
+          {navLinks.map(link => (
+            <a
+              key={link.name}
+              href={link.href}
+              className="relative text-gray-200 hover:text-blue-300 font-medium transition-colors duration-200 px-2 py-1 group"
+            >
+              <span>{link.name}</span>
+              <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-blue-400 group-hover:w-full transition-all duration-300"></span>
+            </a>
+          ))}
         </div>
-        {/* Desktop nav */}
-        <nav className="hidden md:block" aria-label="Main navigation">
-          <ul className="flex gap-8 items-center">
-            {navLinks.map(link => (
-              <li key={link.name}>
-                <a
-                  href={link.href}
-                  aria-current={link.current ? 'page' : undefined}
-                  className={`text-lg px-4 py-2 rounded-lg font-medium transition-colors duration-200 hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/70 ${link.current ? 'bg-white/20 text-white' : 'text-white'}`}
-                >
-                  {link.name}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </nav>
-        {/* Mobile nav toggle */}
-        <button
-          className="md:hidden flex items-center justify-center w-10 h-10 rounded-full bg-white/20 hover:bg-white/30 text-white focus:outline-none focus:ring-2 focus:ring-white/70"
-          aria-label="Open navigation menu"
-          onClick={() => setMobileOpen(!mobileOpen)}
-        >
-          <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-          </svg>
-        </button>
+        <div className="flex items-center space-x-4">
+          <Button variant="ghost" className="hidden md:block px-4 py-2 rounded-full text-blue-200 hover:bg-blue-900/30 hover:text-white transition font-semibold">
+            Sign In
+          </Button>
+          <Button className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-700 text-white rounded-full hover:from-blue-600 hover:to-blue-800 shadow-md font-semibold transition">
+            Sign Up
+          </Button>
+          <button className="md:hidden p-2" onClick={() => setMobileOpen(!mobileOpen)}>
+            <Menu className="w-6 h-6 text-blue-200" />
+          </button>
+        </div>
       </div>
       {/* Mobile nav menu */}
       {mobileOpen && (
-        <nav className="md:hidden bg-gradient-to-r from-blue-700 to-blue-400 px-6 pb-4 animate-fade-in-down" aria-label="Mobile navigation">
-          <ul className="flex flex-col gap-2">
+        <div className="md:hidden bg-gradient-to-r from-[#1e293b] via-[#334155] to-[#1e293b] px-4 pb-4 border-b border-gray-900/80 animate-fade-in-down">
+          <div className="flex flex-col space-y-2">
             {navLinks.map(link => (
-              <li key={link.name}>
-                <a
-                  href={link.href}
-                  aria-current={link.current ? 'page' : undefined}
-                  className={`block text-lg px-4 py-2 rounded-lg font-medium transition-colors duration-200 hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/70 ${link.current ? 'bg-white/20 text-white' : 'text-white'}`}
-                  onClick={() => setMobileOpen(false)}
-                >
-                  {link.name}
-                </a>
-              </li>
+              <a key={link.name} href={link.href} className="text-gray-200 hover:text-blue-300 transition py-2 font-medium">
+                {link.name}
+              </a>
             ))}
-          </ul>
-        </nav>
+            <Button variant="ghost" className="w-full text-blue-200 hover:bg-blue-900/30 hover:text-white font-semibold">Sign In</Button>
+            <Button className="w-full bg-gradient-to-r from-blue-500 to-blue-700 text-white font-semibold">Sign Up</Button>
+          </div>
+        </div>
       )}
-    </header>
+    </nav>
   );
 }
