@@ -15,7 +15,6 @@ const Login = () => {
 				</div>
 				{/* Right side full content */}
 				<div className="w-full md:w-1/2 flex flex-col justify-center items-center bg-white/90 px-8 py-12">
-					<img src={import.meta.env.BASE_URL + 'src/assets/images/logo1.png'} alt="TravelMate.lk Logo" className="w-24 mb-6 drop-shadow-lg" />
 					<h2 className="text-3xl md:text-4xl font-extrabold text-gray-800 mb-2 tracking-tight text-center">Sign in to TravelMate.lk</h2>
 					<p className="text-gray-500 mb-6 text-center">Welcome back! Plan your next Sri Lankan adventure.</p>
 					<SignIn
