@@ -1,32 +1,102 @@
+
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { Star, StarOff, Clock, Compass, Briefcase, Umbrella } from 'lucide-react';
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import GlobalSearchBar from '../components/GlobalSearchBar';
+import FeaturedCarousel from '../components/FeaturedCarousel';
+import CategoriesPromotions from '../components/CategoriesPromotions';
+import Testimonials from '../components/Testimonials';
 
 function Home() {
-  // Hero banner image
-  const heroBanner = '/src/assets/images/hero-banner.png';
-  const heroBgTop = '/src/assets/images/hero-bg-top.png';
-  const heroBgBottom = '/src/assets/images/hero-bg-bottom.png';
-  const shape1 = '/src/assets/images/shape-1.png';
-  const shape2 = '/src/assets/images/shape-2.png';
-  const shape3 = '/src/assets/images/shape-3.png';
-
-  // Destinations
-  const destinations = [
-    { city: 'Malé', country: 'Maldives', img: '/src/assets/images/destination-1.jpg' },
-    { city: 'Bangkok', country: 'Thailand', img: '/src/assets/images/destination-2.jpg' },
-    { city: 'Kuala Lumpur', country: 'Malaysia', img: '/src/assets/images/destination-3.jpg' },
-    { city: 'Kathmandu', country: 'Nepal', img: '/src/assets/images/destination-4.jpg' },
-    { city: 'Jakarta', country: 'Indonesia', img: '/src/assets/images/destination-5.jpg' },
+  // Hero slideshow images (Sri Lankan destinations)
+  const heroSlides = [
+    {
+      img: '/src/assets/images/destination-1.jpg',
+      title: "Sigiriya Rock Fortress",
+      desc: "Climb the ancient rock citadel and marvel at breathtaking views and history."
+    },
+    {
+      img: '/src/assets/images/destination-2.jpg',
+      title: "Udawalawe National Park",
+      desc: "Experience Sri Lanka's wild side with elephants and safaris in Udawalawe."
+    },
+    {
+      img: '/src/assets/images/destination-3.jpg',
+      title: "Little Adam's Peak View Point",
+      desc: "Hike to panoramic vistas in Ella's lush highlands."
+    },
+    {
+      img: '/src/assets/images/destination-4.jpg',
+      title: "Nine Arches Bridge",
+      desc: "Witness the iconic colonial-era bridge amidst misty tea fields."
+    },
+    {
+      img: '/src/assets/images/destination-5.jpg',
+      title: "Bentota Beach",
+      desc: "Relax on golden sands and enjoy water sports on Sri Lanka's southwest coast."
+    },
   ];
 
-  // Popular tours
+  // Slideshow state
+  const [slide, setSlide] = useState(0);
+  useEffect(() => {
+    const timer = setInterval(() => setSlide((s) => (s + 1) % heroSlides.length), 4500);
+    return () => clearInterval(timer);
+  }, [heroSlides.length]);
+
+  // Only Sri Lankan destinations
+  const destinations = [
+    { city: "Sigiriya", country: "Sri Lanka", img: '/src/assets/images/destination-1.jpg' },
+    { city: "Udawalawe National Park", country: "Sri Lanka", img: '/src/assets/images/destination-2.jpg' },
+    { city: "Little Adam's Peak", country: "Sri Lanka", img: '/src/assets/images/destination-3.jpg' },
+    { city: "Nine Arches Bridge", country: "Sri Lanka", img: '/src/assets/images/destination-4.jpg' },
+    { city: "Bentota Beach", country: "Sri Lanka", img: '/src/assets/images/destination-5.jpg' },
+  ];
+
+  // Popular tours (Sri Lankan destinations only)
   const popularTours = [
-    { img: '/src/assets/images/popular-1.jpg', days: 7, price: 799, rating: 5, location: 'Kuala Lumpur, Malaysia', title: 'Discover Kuala Lumpur: Urban Wonders & Culture' },
-    { img: '/src/assets/images/popular-2.jpg', days: 10, price: 1299, rating: 4, location: 'Bangkok, Thailand', title: 'Bangkok Explorer: Temples, Food & Nightlife' },
-    { img: '/src/assets/images/popular-3.jpg', days: 5, price: 599, rating: 4, location: 'Malé, Maldives', title: 'Maldives Paradise: Beaches & Relaxation' },
+    {
+      img: '/src/assets/images/destination-1.jpg',
+      days: 3,
+      price: 120,
+      rating: 5,
+      location: 'Sigiriya, Sri Lanka',
+      title: 'Sigiriya Rock Fortress Adventure',
+    },
+    {
+      img: '/src/assets/images/destination-2.jpg',
+      days: 2,
+      price: 90,
+      rating: 4,
+      location: 'Udawalawe, Sri Lanka',
+      title: 'Udawalawe National Park Safari',
+    },
+    {
+      img: '/src/assets/images/destination-3.jpg',
+      days: 1,
+      price: 60,
+      rating: 5,
+      location: 'Ella, Sri Lanka',
+      title: "Little Adam's Peak Hiking Tour",
+    },
+    {
+      img: '/src/assets/images/destination-4.jpg',
+      days: 1,
+      price: 50,
+      rating: 4,
+      location: 'Ella, Sri Lanka',
+      title: 'Nine Arches Bridge & Tea Fields',
+    },
+    {
+      img: '/src/assets/images/destination-5.jpg',
+      days: 2,
+      price: 80,
+      rating: 5,
+      location: 'Bentota, Sri Lanka',
+      title: 'Bentota Beach Relaxation & Water Sports',
+    },
   ];
 
   // About features (TravelMate value props)
@@ -43,39 +113,101 @@ function Home() {
     { img: '/src/assets/images/blog-3.jpg', date: '28 Oct', author: 'TravelMate Team', time: '02:15 PM', title: 'Hidden Gems: Underrated Cities to Explore' },
   ];
 
+
   return (
+
     <div className="min-h-screen bg-white">
       <Header />
 
-      {/* Hero Section */}
-      <motion.section
-        className="section hero relative bg-no-repeat bg-top bg-cover"
-        style={{ backgroundImage: `url(${heroBgBottom}), url(${heroBgTop})` }}
-        initial={{ opacity: 0, y: -40 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-      >
-        <div className="container mx-auto px-4 flex flex-col md:flex-row items-center relative py-16 md:py-24">
-          {/* Shapes */}
-          <motion.img src={shape1} alt="shape1" className="absolute left-0 top-10 w-12 h-12 opacity-80 animate-shape-float shape shape-1" initial={{ opacity: 0, x: -40 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }} />
-          <motion.img src={shape2} alt="shape2" className="absolute right-10 top-20 w-12 h-16 opacity-80 animate-shape-rotate shape shape-2" initial={{ opacity: 0, y: -40 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} />
-          <motion.img src={shape3} alt="shape3" className="absolute left-1/2 bottom-0 w-12 h-16 opacity-80 animate-shape-float2 shape shape-3" initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 }} />
-          {/* Content */}
-          <motion.div className="flex-1 z-10 hero-content" initial={{ opacity: 0, x: -60 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}>
-            <p className="section-subtitle text-blue-600 font-semibold mb-2 text-lg">Your Journey Starts Here</p>
-            <h1 className="hero-title text-4xl md:text-6xl font-bold mb-4">TravelMate: Explore, Dream, Discover</h1>
-            <p className="hero-text text-gray-700 mb-6 max-w-lg">Plan your next adventure with TravelMate. From hidden gems to world-famous landmarks, we help you create unforgettable memories with ease and confidence.</p>
-            <div className="btn-group flex gap-4 mb-6">
-              <a href="#contact" className="btn btn-primary bg-blue-600 text-white px-6 py-2 rounded shadow-lg hover:scale-105 transition-transform">Contact Us</a>
-              <a href="#about" className="btn btn-outline border-blue-600 text-blue-600 px-6 py-2 rounded hover:bg-blue-50 hover:scale-105 transition-transform">Learn More</a>
-            </div>
-          </motion.div>
-          {/* Hero Banner */}
-          <motion.div className="flex-1 flex justify-center z-10 hero-banner" initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.4 }}>
-            <img src={heroBanner} alt="hero banner" className="w-full max-w-md md:max-w-lg drop-shadow-xl" />
-          </motion.div>
+      {/* Hero Slideshow Section - Fullscreen Image with Overlayed Content */}
+      <section className="relative w-full h-[70vh] md:h-[80vh] flex items-center justify-center overflow-hidden">
+        {/* Background slideshow image */}
+        <AnimatePresence mode="wait">
+          <motion.img
+            key={heroSlides[slide].img}
+            src={heroSlides[slide].img}
+            alt={heroSlides[slide].title}
+            className="absolute inset-0 w-full h-full object-cover object-center z-0 transition-all duration-700"
+            initial={{ opacity: 0, scale: 1.05 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 1.05 }}
+            transition={{ duration: 0.8 }}
+          />
+        </AnimatePresence>
+        {/* Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent z-10" />
+        {/* Centered content */}
+        <div className="relative z-20 w-full flex flex-col items-center justify-center h-full px-4">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={slide}
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -40 }}
+              transition={{ duration: 0.7 }}
+              className="w-full max-w-3xl mx-auto text-center"
+            >
+              <p className="section-subtitle text-blue-200 font-semibold mb-2 text-lg drop-shadow">Explore Sri Lanka with TravelMate.lk</p>
+              <h1 className="hero-title text-4xl md:text-6xl font-extrabold mb-4 text-white drop-shadow-lg leading-tight">{heroSlides[slide].title}</h1>
+              <p className="hero-text text-gray-100 mb-8 max-w-2xl mx-auto text-lg md:text-xl drop-shadow">{heroSlides[slide].desc}</p>
+              <div className="btn-group flex flex-col sm:flex-row gap-4 mb-8 justify-center items-center">
+                <a
+                  href="#search"
+                  className="btn bg-gradient-to-r from-blue-500 via-cyan-500 to-blue-700 text-white px-10 py-4 rounded-full font-bold shadow-xl text-lg flex items-center gap-3 transition-all duration-300 hover:scale-105 hover:from-blue-600 hover:to-cyan-600 hover:to-blue-800 focus:ring-4 focus:ring-blue-300 animate-shimmer"
+                  style={{ backgroundSize: '200% 200%' }}
+                >
+                  <span className="text-white">Start Planning</span>
+                  <svg className="w-5 h-5 ml-1 animate-move-right" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
+                </a>
+                <a href="#about" className="btn bg-white/90 text-blue-700 px-8 py-3 rounded-full font-semibold shadow hover:bg-white transition text-lg">Why TravelMate?</a>
+                <a
+                  href="#about"
+                  className="btn border-2 border-blue-500 bg-gradient-to-r from-white/90 to-blue-50 text-blue-700 px-8 py-3 rounded-full font-semibold shadow-md text-lg flex items-center gap-2 transition-all duration-300 hover:bg-blue-50 hover:text-blue-800 hover:scale-105 focus:ring-4 focus:ring-blue-200"
+                >
+                  <span className="font-semibold">Why TravelMate?</span>
+                  <svg className="w-5 h-5 ml-1 text-blue-500 group-hover:translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
+                </a>
+              </div>
+            </motion.div>
+          </AnimatePresence>
+          {/* Slide indicators */}
+          <div className="flex gap-3 mt-2 justify-center">
+            {heroSlides.map((_, idx) => (
+              <button
+                key={idx}
+                className={`w-5 h-2.5 rounded-full ${slide === idx ? 'bg-blue-500 shadow-lg' : 'bg-white/60'} border-none transition-all duration-300`}
+                onClick={() => setSlide(idx)}
+                aria-label={`Go to slide ${idx + 1}`}
+                style={{ outline: 'none' }}
+              />
+            ))}
+          </div>
         </div>
-      </motion.section>
+      </section>
+
+
+      {/* AI Search Bar */}
+      <section id="search" className="container mx-auto px-4 mt-[-60px] mb-12 relative z-20">
+        <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.7 }}>
+          <GlobalSearchBar />
+        </motion.div>
+      </section>
+
+      {/* Featured Destinations Carousel */}
+      <section className="container mx-auto px-4 mb-16">
+        <h2 className="text-3xl font-bold text-gray-900 mb-6 text-center">Featured Destinations</h2>
+        <FeaturedCarousel />
+      </section>
+
+      {/* Categories and Promotions */}
+      <section className="container mx-auto px-4 mb-16">
+        <CategoriesPromotions />
+      </section>
+
+      {/* Testimonials */}
+      <section className="container mx-auto px-4 mb-16">
+        <Testimonials />
+      </section>
 
       {/* Destinations */}
       <motion.section className="section destination py-16" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={{ hidden: { opacity: 0, y: 40 }, visible: { opacity: 1, y: 0, transition: { staggerChildren: 0.1 } } }}>
@@ -214,6 +346,7 @@ function Home() {
       </motion.section>
 
       <Footer />
+
     </div>
   );
 }
