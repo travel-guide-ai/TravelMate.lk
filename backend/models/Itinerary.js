@@ -1,4 +1,4 @@
-import { date, ref, required } from "joi";
+import Joi from "joi";
 import mongoose from "mongoose";
 
 const destinationPlanSchema = new mongoose.Schema(
