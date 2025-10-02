@@ -11,7 +11,7 @@ const Register = () => {
 
 	// Redirect if already signed in
 	if (isLoaded && isSignedIn) {
-		return <Navigate to="/" replace />;
+		return <Navigate to="/dashboard" replace />;
 	}
 
 	// Show loading if Clerk is still loading

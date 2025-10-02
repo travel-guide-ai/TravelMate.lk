@@ -4,62 +4,85 @@ import { useEffect, useState } from 'react';
 const API_BASE_URL = 'http://localhost:5000/api/v1';
 
 export const useUserSync = () => {
-  const { user, isLoaded } = useUser();
-  const [syncStatus, setSyncStatus] = useState(null);
+  const { user: clerkUser, isLoaded } = useUser();
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const syncUserToMongoDB = async () => {
-      if (!isLoaded || !user) return;
+  const syncUser = async () => {
+    if (!isLoaded || !clerkUser) return;
 
-      try {
-        // Check if user exists in our MongoDB
-        const response = await fetch(`${API_BASE_URL}/users/me`, {
+    setLoading(true);
+    setError(null);
+
+    try {
+      // First try to get existing user
+      const response = await fetch(`${API_BASE_URL}/users/me`, {
+        headers: {
+          'Authorization': `Bearer ${await clerkUser.getToken()}`,
+        },
+      });
+
+      if (response.ok) {
+        const userData = await response.json();
+        setUser(userData);
+        console.log('User found in MongoDB:', userData);
+      } else if (response.status === 404) {
+        // User doesn't exist, create them
+        console.log('User not found in MongoDB, creating...');
+        
+        const createResponse = await fetch(`${API_BASE_URL}/test/create-clerk-user`, {
+          method: 'POST',
           headers: {
-            'Authorization': `Bearer ${await user.getToken()}`,
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${await clerkUser.getToken()}`,
           },
+          body: JSON.stringify({
+            clerkId: clerkUser.id,
+            email: clerkUser.primaryEmailAddress?.emailAddress,
+            emailVerified: clerkUser.primaryEmailAddress?.verification?.status === 'verified',
+            firstName: clerkUser.firstName,
+            lastName: clerkUser.lastName,
+            username: clerkUser.username,
+            phoneNumber: clerkUser.primaryPhoneNumber?.phoneNumber,
+            avatar: clerkUser.imageUrl,
+          }),
         });
 
-        if (response.status === 404) {
-          // User doesn't exist in MongoDB, create them
-          console.log('User not found in MongoDB, creating...');
-          
-          const createResponse = await fetch(`${API_BASE_URL}/test/create-clerk-user`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${await user.getToken()}`,
-            },
-            body: JSON.stringify({
-              clerkId: user.id,
-              email: user.primaryEmailAddress?.emailAddress,
-              emailVerified: user.primaryEmailAddress?.verification?.status === 'verified',
-              firstName: user.firstName,
-              lastName: user.lastName,
-              username: user.username,
-              phoneNumber: user.primaryPhoneNumber?.phoneNumber,
-              avatar: user.imageUrl,
-            }),
-          });
-
-          if (createResponse.ok) {
-            console.log('User successfully synced to MongoDB');
-            setSyncStatus('synced');
-          } else {
-            console.error('Failed to sync user to MongoDB');
-            setSyncStatus('error');
-          }
-        } else if (response.ok) {
-          console.log('User already exists in MongoDB');
-          setSyncStatus('exists');
+        if (createResponse.ok) {
+          const newUser = await createResponse.json();
+          setUser(newUser);
+          console.log('User successfully created in MongoDB:', newUser);
+        } else {
+          throw new Error('Failed to create user in MongoDB');
         }
-      } catch (error) {
-        console.error('Error syncing user:', error);
-        setSyncStatus('error');
+      } else {
+        throw new Error(`Failed to fetch user: ${response.statusText}`);
       }
-    };
+    } catch (error) {
+      console.error('Error syncing user:', error);
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    syncUserToMongoDB();
-  }, [user, isLoaded]);
+  const updateUser = (updatedUserData) => {
+    setUser(updatedUserData);
+  };
 
-  return { syncStatus };
+  // Auto-sync on component mount
+  useEffect(() => {
+    if (isLoaded && clerkUser && !user && !loading) {
+      syncUser();
+    }
+  }, [isLoaded, clerkUser]);
+
+  return { 
+    user, 
+    loading, 
+    error, 
+    syncUser,
+    updateUser 
+  };
 };
