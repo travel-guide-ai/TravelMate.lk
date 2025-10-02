@@ -39,6 +39,30 @@ const userSchema = new mongoose.Schema(
       nationality: {
         type: String,
       },
+      bio: {
+        type: String,
+        maxlength: 500,
+      },
+      location: {
+        city: {
+          type: String,
+        },
+        country: {
+          type: String,
+        },
+        coordinates: {
+          lat: Number,
+          lng: Number,
+        },
+      },
+      interests: {
+        type: [String],
+        default: [],
+      },
+      travelStyle: {
+        type: String,
+        enum: ['adventure', 'luxury', 'budget', 'cultural', 'nature', 'urban', 'relaxation'],
+      },
       preferences: {
         type: [String],
       },
@@ -48,6 +72,31 @@ const userSchema = new mongoose.Schema(
       },
       avatar: {
         type: String,
+      },
+    },
+    statistics: {
+      totalDestinationsVisited: {
+        type: Number,
+        default: 0,
+      },
+      totalItinerariesCreated: {
+        type: Number,
+        default: 0,
+      },
+      totalReviewsWritten: {
+        type: Number,
+        default: 0,
+      },
+      memberSince: {
+        type: Date,
+        default: Date.now,
+      },
+      lastLoginDate: {
+        type: Date,
+      },
+      profileViews: {
+        type: Number,
+        default: 0,
       },
     },
     bookmarks: [
@@ -83,14 +132,41 @@ const userSchema = new mongoose.Schema(
     settings: {
       emailNotifications: {
         type: Boolean,
+        default: true,
       },
       pushNotifications: {
         type: Boolean,
+        default: true,
+      },
+      smsNotifications: {
+        type: Boolean,
+        default: false,
       },
       privacy: {
         type: String,
         enum: ["public", "private", "friends"],
         default: "public",
+      },
+      twoFactorAuth: {
+        type: Boolean,
+        default: false,
+      },
+      dataSharing: {
+        type: Boolean,
+        default: false,
+      },
+      theme: {
+        type: String,
+        enum: ["light", "dark", "auto"],
+        default: "light",
+      },
+      currency: {
+        type: String,
+        default: "USD",
+      },
+      timeZone: {
+        type: String,
+        default: "UTC",
       },
     },
     lastActive: {
