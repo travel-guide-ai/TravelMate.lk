@@ -157,7 +157,7 @@ function Home() {
               <div className="btn-group flex flex-col sm:flex-row gap-4 mb-8 justify-center items-center">
                 <a
                   href="#search"
-                  className="btn bg-gradient-to-r from-blue-500 via-cyan-500 to-blue-700 text-white px-10 py-4 rounded-full font-bold shadow-xl text-lg flex items-center gap-3 transition-all duration-300 hover:scale-105 hover:from-blue-600 hover:to-cyan-600 hover:to-blue-800 focus:ring-4 focus:ring-blue-300 animate-shimmer"
+                  className="btn bg-gradient-to-r from-blue-500 via-cyan-500 to-blue-700 text-white px-10 py-4 rounded-full font-bold shadow-xl text-lg flex items-center gap-3 transition-all duration-300 hover:scale-105 hover:from-blue-600 hover:to-cyan-600 focus:ring-4 focus:ring-blue-300 animate-shimmer"
                   style={{ backgroundSize: '200% 200%' }}
                 >
                   <span className="text-white">Start Planning</span>
