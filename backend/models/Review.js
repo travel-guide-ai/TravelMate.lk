@@ -66,6 +66,43 @@ const reviewSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// Indexes for efficient querying
+reviewSchema.index({ destinationId: 1, createdAt: -1 }); // Destination reviews (latest first)
+reviewSchema.index({ userId: 1, createdAt: -1 }); // User's reviews
+reviewSchema.index({ destinationId: 1, rating: -1 }); // Destination reviews by rating
+reviewSchema.index({ destinationId: 1, moderationStatus: 1, createdAt: -1 }); // Approved destination reviews
+reviewSchema.index({ moderationStatus: 1, createdAt: 1 }); // Moderation queue
+reviewSchema.index({ isVerified: 1, rating: -1 }); // Verified reviews by rating
+reviewSchema.index({ visitDate: -1, moderationStatus: 1 }); // Recent visits
+reviewSchema.index({ likes: -1, moderationStatus: 1 }); // Most helpful reviews
+reviewSchema.index({ travelType: 1, destinationId: 1 }); // Reviews by travel type
+
+// Text search index
+reviewSchema.index({
+  title: "text",
+  content: "text"
+});
+
+// Compound indexes for complex queries
+reviewSchema.index({
+  destinationId: 1,
+  moderationStatus: 1,
+  rating: -1,
+  createdAt: -1
+}); // Approved destination reviews by rating and date
+
+reviewSchema.index({
+  userId: 1,
+  moderationStatus: 1,
+  createdAt: -1
+}); // User's approved reviews
+
+reviewSchema.index({
+  destinationId: 1,
+  travelType: 1,
+  rating: -1
+}); // Destination reviews by travel type and rating
+
 const Review = mongoose.model("Review", reviewSchema);
 
 export default Review;

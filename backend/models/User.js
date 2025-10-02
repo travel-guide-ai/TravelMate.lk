@@ -176,7 +176,22 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-userSchema.index({});
+// userSchema.index({ clerkId: 1 }); // Removed - already unique
+// userSchema.index({ email: 1 }); // Removed - already unique
+// userSchema.index({ 'profile.username': 1 }, { sparse: true }); // Removed - already unique sparse
+userSchema.index({ 'socialProfile.followers': 1 }); // Social queries
+userSchema.index({ 'socialProfile.following': 1 }); // Social queries
+userSchema.index({ 'profile.location.coordinates': '2dsphere' }); // Geospatial queries
+userSchema.index({ 'profile.interests': 1 }); // Interest-based matching
+userSchema.index({ 'profile.travelStyle': 1 }); // Travel style filtering
+userSchema.index({ lastActive: -1 }); // Active users sorting
+userSchema.index({ createdAt: -1 }); // Recent users
+userSchema.index({ 'statistics.totalDestinationsVisited': -1 }); // Leaderboards
+userSchema.index({ 'statistics.totalItinerariesCreated': -1 }); // Leaderboards
+
+// Compound indexes for complex queries
+userSchema.index({ 'socialProfile.isPublic': 1, 'profile.travelStyle': 1 }); // Public users by travel style
+userSchema.index({ 'profile.location.city': 1, 'profile.travelStyle': 1 }); // Local users by style
 
 const User = mongoose.model("User", userSchema);
 

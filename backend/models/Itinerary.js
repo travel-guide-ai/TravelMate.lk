@@ -123,6 +123,34 @@ const itinerarySchema = mongoose.Schema(
   { timestamps: true }
 );
 
+// Indexes for efficient querying
+itinerarySchema.index({ userId: 1, createdAt: -1 }); // User's itineraries
+itinerarySchema.index({ 'sharing.isPublic': 1, createdAt: -1 }); // Public itineraries
+itinerarySchema.index({ 'sharing.isPublic': 1, 'stats.views': -1 }); // Popular public itineraries
+itinerarySchema.index({ 'sharing.isPublic': 1, 'stats.likes': -1 }); // Most liked itineraries
+itinerarySchema.index({ duration: 1, 'sharing.isPublic': 1 }); // Duration-based filtering
+itinerarySchema.index({ 'metadata.travelStyle': 1, 'sharing.isPublic': 1 }); // Travel style filtering
+itinerarySchema.index({ 'metadata.totalBudget': 1, 'sharing.isPublic': 1 }); // Budget-based filtering
+
+// Text search index
+itinerarySchema.index({
+  title: "text",
+  description: "text"
+});
+
+// Compound indexes for complex queries
+itinerarySchema.index({
+  'sharing.isPublic': 1,
+  'metadata.travelStyle': 1,
+  duration: 1
+}); // Public itineraries by style and duration
+
+itinerarySchema.index({
+  userId: 1,
+  'sharing.isPublic': 1,
+  updatedAt: -1
+}); // User's itineraries with visibility
+
 const Itinerary = mongoose.model("Itinerary", itinerarySchema);
 
 export default Itinerary;
