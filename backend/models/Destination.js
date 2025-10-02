@@ -13,7 +13,7 @@ const destinationSchema = mongoose.Schema(
     },
     category: {
       type: String,
-      enum: ["attraction", "hotel", "restaurant", , "activity"],
+      enum: ["attraction", "hotel", "restaurant", "activity"],
       required: true,
     },
     subCategory: {
@@ -80,7 +80,7 @@ const destinationSchema = mongoose.Schema(
         open: String,
         close: String,
       },
-      wenesday: {
+      wednesday: {
         open: String,
         close: String,
       },
@@ -102,7 +102,7 @@ const destinationSchema = mongoose.Schema(
       },
     },
     pricing: {
-      currency: { type: Number, default: "LKR" },
+      currency: { type: String, default: "LKR" },
       adult: {
         type: Number,
       },
@@ -152,23 +152,44 @@ const destinationSchema = mongoose.Schema(
   }
 );
 
-destinationSchema.index({ location: "2dsphere" });
+destinationSchema.index({ location: "2dsphere" }); // Geospatial queries
 destinationSchema.index({
   name: "text",
   "description.en": "text",
   "description.si": "text",
+  "description.ta": "text",
   tags: "text",
-});
+}); // Text search
 
+// Core filtering indexes
+destinationSchema.index({ category: 1, "ratings.average": -1 }); // Category with rating sort
+destinationSchema.index({ featured: -1, createdAt: -1 }); // Featured destinations
+destinationSchema.index({ isActive: 1, category: 1 }); // Active destinations by category
+destinationSchema.index({ "location.city": 1, category: 1 }); // City-based filtering
+destinationSchema.index({ "location.province": 1, category: 1 }); // Province-based filtering
+
+// Advanced filtering indexes
+destinationSchema.index({ tags: 1, "ratings.average": -1 }); // Tag-based with rating
+destinationSchema.index({ "pricing.adult": 1, category: 1 }); // Price-based filtering
+destinationSchema.index({ amenities: 1, category: 1 }); // Amenity-based filtering
+destinationSchema.index({ createdBy: 1, createdAt: -1 }); // User's destinations
+
+// Performance optimization indexes
+// destinationSchema.index({ slug: 1 }); // Removed - already unique
+destinationSchema.index({ "ratings.count": -1 }); // Popular destinations (by review count)
+destinationSchema.index({ featured: 1, "ratings.average": -1, "ratings.count": -1 }); // Homepage featured
+
+// Compound indexes for complex queries
 destinationSchema.index({
+  "location.city": 1,
   category: 1,
-  "ratings.average": -1,
-});
-
+  "ratings.average": -1
+}); // Location + category + rating
 destinationSchema.index({
-  featured: -1,
-  createdAt: -1,
-});
+  isActive: 1,
+  featured: 1,
+  "ratings.average": -1
+}); // Active featured with rating
 
 const Destination = mongoose.model("Destination", destinationSchema);
 
