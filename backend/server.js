@@ -8,6 +8,7 @@ import userRoutes from "./routes/userRoutes.js";
 import testRoutes from "./routes/testRoutes.js";
 import profileRoutes from "./routes/profileRoutes.js";
 import dashboardRoutes from "./routes/dashboardRoutes.js";
+import notificationRoutes from "./routes/notificationRoutes.js";
 dotenv.config();
 
 const app = express();
@@ -42,6 +43,7 @@ app.use("/api/v1/webhooks", webhookRoutes);
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/profile", profileRoutes);
 app.use("/api/v1/dashboard", dashboardRoutes);
+app.use("/api/v1/notifications", notificationRoutes);
 app.use("/api/v1/test", testRoutes);
 
 app.listen(PORT, () => {

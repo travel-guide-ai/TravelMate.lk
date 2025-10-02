@@ -303,36 +303,29 @@ export const getRecentNotifications = async (req, res) => {
       });
     }
 
-    // Mock notifications (implement based on your notification system)
-    const notifications = [
-      {
-        id: 1,
-        type: 'follower',
-        message: 'You have 3 new followers',
-        timestamp: new Date(Date.now() - 1000 * 60 * 30), // 30 minutes ago
-        read: false
-      },
-      {
-        id: 2,
-        type: 'review',
-        message: 'Your review of Bali Beach Resort received 5 likes',
-        timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2), // 2 hours ago
-        read: false
-      },
-      {
-        id: 3,
-        type: 'recommendation',
-        message: 'New destinations matching your interests are available',
-        timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24), // 1 day ago
-        read: true
-      }
-    ];
+    // Get recent notifications from the database
+    const Notification = (await import('../models/Notification.js')).default;
+    
+    const notifications = await Notification.find({
+      recipient: user._id,
+      status: { $in: ['unread', 'read'] }
+    })
+    .populate('sender', 'profile.firstName profile.lastName profile.username profile.avatar')
+    .sort({ createdAt: -1 })
+    .limit(5)
+    .lean();
+
+    // Get unread count
+    const unreadCount = await Notification.countDocuments({
+      recipient: user._id,
+      status: 'unread'
+    });
 
     res.status(200).json({
       success: true,
       data: {
         notifications,
-        unreadCount: notifications.filter(n => !n.read).length
+        unreadCount
       }
     });
   } catch (error) {
