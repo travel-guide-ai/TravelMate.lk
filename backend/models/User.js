@@ -3,22 +3,34 @@ import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema(
   {
+    clerkId: {
+      type: String,
+      unique: true,
+      required: true,
+    },
     email: {
       type: String,
       unique: true,
       required: true,
       lowercase: true,
     },
-    password: {
-      type: String,
-      unique: true,
-      required: true,
+    emailVerified: {
+      type: Boolean,
+      default: false,
     },
     profile: {
-      fistName: {
+      firstName: {
         type: String,
       },
       lastName: {
+        type: String,
+      },
+      username: {
+        type: String,
+        unique: true,
+        sparse: true,
+      },
+      phoneNumber: {
         type: String,
       },
       dateOfBirth: {
