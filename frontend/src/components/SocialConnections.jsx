@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { useUser } from '@clerk/clerk-react';
 import './SocialConnections.css';
 
 const SocialConnections = ({ mongoUser }) => {
+  const { user: clerkUser } = useUser();
   const [activeTab, setActiveTab] = useState('followers');
   const [followers, setFollowers] = useState([]);
   const [following, setFollowing] = useState([]);
@@ -16,24 +18,32 @@ const SocialConnections = ({ mongoUser }) => {
   }, [mongoUser]);
 
   const fetchSocialData = async () => {
+    if (!clerkUser) return;
+    
     setLoading(true);
     try {
+      const token = await clerkUser.getToken();
+      const headers = {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      };
+
       // Fetch followers
-      const followersResponse = await fetch(`http://localhost:5000/api/users/${mongoUser._id}/followers`);
+      const followersResponse = await fetch(`http://localhost:5000/api/v1/users/${mongoUser._id}/followers`, { headers });
       if (followersResponse.ok) {
         const followersData = await followersResponse.json();
         setFollowers(followersData.followers || []);
       }
 
       // Fetch following
-      const followingResponse = await fetch(`http://localhost:5000/api/users/${mongoUser._id}/following`);
+      const followingResponse = await fetch(`http://localhost:5000/api/v1/users/${mongoUser._id}/following`, { headers });
       if (followingResponse.ok) {
         const followingData = await followingResponse.json();
         setFollowing(followingData.following || []);
       }
 
       // Fetch suggestions
-      const suggestionsResponse = await fetch(`http://localhost:5000/api/users/${mongoUser._id}/suggestions`);
+      const suggestionsResponse = await fetch(`http://localhost:5000/api/v1/users/${mongoUser._id}/suggestions`, { headers });
       if (suggestionsResponse.ok) {
         const suggestionsData = await suggestionsResponse.json();
         setSuggestions(suggestionsData.suggestions || []);
@@ -46,24 +56,22 @@ const SocialConnections = ({ mongoUser }) => {
   };
 
   const followUser = async (userId) => {
+    if (!clerkUser) return;
+    
     try {
-      const response = await fetch(`http://localhost:5000/api/users/${mongoUser._id}/follow`, {
+      const token = await clerkUser.getToken();
+      const response = await fetch(`http://localhost:5000/api/v1/users/follow`, {
         method: 'POST',
         headers: {
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ userId })
+        body: JSON.stringify({ targetUserId: userId })
       });
 
       if (response.ok) {
-        // Update local state
-        const userToFollow = suggestions.find(user => user._id === userId);
-        if (userToFollow) {
-          setFollowing(prev => [...prev, userToFollow]);
-          setSuggestions(prev => prev.filter(user => user._id !== userId));
-        }
-      } else {
-        console.error('Failed to follow user');
+        // Refresh social data after successful follow
+        fetchSocialData();
       }
     } catch (error) {
       console.error('Error following user:', error);
@@ -71,24 +79,22 @@ const SocialConnections = ({ mongoUser }) => {
   };
 
   const unfollowUser = async (userId) => {
+    if (!clerkUser) return;
+    
     try {
-      const response = await fetch(`http://localhost:5000/api/users/${mongoUser._id}/unfollow`, {
+      const token = await clerkUser.getToken();
+      const response = await fetch(`http://localhost:5000/api/v1/users/unfollow`, {
         method: 'POST',
         headers: {
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ userId })
+        body: JSON.stringify({ targetUserId: userId })
       });
 
       if (response.ok) {
-        // Update local state
-        const userToUnfollow = following.find(user => user._id === userId);
-        if (userToUnfollow) {
-          setFollowing(prev => prev.filter(user => user._id !== userId));
-          setSuggestions(prev => [...prev, userToUnfollow]);
-        }
-      } else {
-        console.error('Failed to unfollow user');
+        // Refresh social data after successful unfollow
+        fetchSocialData();
       }
     } catch (error) {
       console.error('Error unfollowing user:', error);
@@ -101,8 +107,16 @@ const SocialConnections = ({ mongoUser }) => {
       return;
     }
 
+    if (!clerkUser) return;
+
     try {
-      const response = await fetch(`http://localhost:5000/api/users/search?q=${encodeURIComponent(term)}&exclude=${mongoUser._id}`);
+      const token = await clerkUser.getToken();
+      const response = await fetch(`http://localhost:5000/api/v1/users/search?q=${encodeURIComponent(term)}&exclude=${mongoUser._id}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
       if (response.ok) {
         const data = await response.json();
         setSuggestions(data.users || []);

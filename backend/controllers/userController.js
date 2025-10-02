@@ -1,4 +1,4 @@
-import { getUserByClerkId, updateUserProfile, getAllUsers } from '../services/userService.js';
+import { getUserByClerkId, updateUserProfile, getAllUsers, getUserById, followUser, unfollowUser, getUserFollowers, getUserFollowing, getUserSuggestions, searchUsers } from '../services/userService.js';
 
 export const getCurrentUser = async (req, res) => {
   try {
@@ -82,6 +82,162 @@ export const getUsers = async (req, res) => {
     });
   } catch (error) {
     console.error('Error fetching users:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+};
+
+// Social functionality
+export const followUserController = async (req, res) => {
+  try {
+    const { userId } = req.auth; // Current user's Clerk ID
+    const { userId: targetUserId } = req.body; // User to follow (MongoDB ID)
+
+    if (!targetUserId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Target user ID is required'
+      });
+    }
+
+    const currentUser = await getUserByClerkId(userId);
+    if (!currentUser) {
+      return res.status(404).json({
+        success: false,
+        message: 'Current user not found'
+      });
+    }
+
+    const result = await followUser(currentUser._id, targetUserId);
+    
+    res.status(200).json({
+      success: true,
+      message: 'User followed successfully',
+      ...result
+    });
+  } catch (error) {
+    console.error('Error following user:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Internal server error'
+    });
+  }
+};
+
+export const unfollowUserController = async (req, res) => {
+  try {
+    const { userId } = req.auth; // Current user's Clerk ID
+    const { userId: targetUserId } = req.body; // User to unfollow (MongoDB ID)
+
+    if (!targetUserId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Target user ID is required'
+      });
+    }
+
+    const currentUser = await getUserByClerkId(userId);
+    if (!currentUser) {
+      return res.status(404).json({
+        success: false,
+        message: 'Current user not found'
+      });
+    }
+
+    const result = await unfollowUser(currentUser._id, targetUserId);
+    
+    res.status(200).json({
+      success: true,
+      message: 'User unfollowed successfully',
+      ...result
+    });
+  } catch (error) {
+    console.error('Error unfollowing user:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Internal server error'
+    });
+  }
+};
+
+export const getFollowers = async (req, res) => {
+  try {
+    const { id: targetUserId } = req.params; // User whose followers to get
+
+    const followers = await getUserFollowers(targetUserId);
+    
+    res.status(200).json({
+      success: true,
+      followers
+    });
+  } catch (error) {
+    console.error('Error fetching followers:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+};
+
+export const getFollowing = async (req, res) => {
+  try {
+    const { id: targetUserId } = req.params; // User whose following to get
+
+    const following = await getUserFollowing(targetUserId);
+    
+    res.status(200).json({
+      success: true,
+      following
+    });
+  } catch (error) {
+    console.error('Error fetching following:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+};
+
+export const getSuggestions = async (req, res) => {
+  try {
+    const { id: targetUserId } = req.params; // User to get suggestions for
+
+    const suggestions = await getUserSuggestions(targetUserId);
+    
+    res.status(200).json({
+      success: true,
+      suggestions
+    });
+  } catch (error) {
+    console.error('Error fetching suggestions:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+};
+
+export const searchUsersController = async (req, res) => {
+  try {
+    const { q: query, exclude } = req.query;
+
+    if (!query || query.trim().length < 2) {
+      return res.status(400).json({
+        success: false,
+        message: 'Search query must be at least 2 characters long'
+      });
+    }
+
+    const users = await searchUsers(query.trim(), exclude);
+    
+    res.status(200).json({
+      success: true,
+      users
+    });
+  } catch (error) {
+    console.error('Error searching users:', error);
     res.status(500).json({
       success: false,
       message: 'Internal server error'
