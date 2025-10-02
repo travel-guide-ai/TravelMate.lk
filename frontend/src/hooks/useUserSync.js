@@ -1,10 +1,11 @@
-import { useUser } from '@clerk/clerk-react';
+import { useUser, useAuth } from '@clerk/clerk-react';
 import { useEffect, useState } from 'react';
 
 const API_BASE_URL = 'http://localhost:5000/api/v1';
 
 export const useUserSync = () => {
   const { user: clerkUser, isLoaded } = useUser();
+  const { getToken } = useAuth();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -19,7 +20,7 @@ export const useUserSync = () => {
       // First try to get existing user
       const response = await fetch(`${API_BASE_URL}/users/me`, {
         headers: {
-          'Authorization': `Bearer ${await clerkUser.getToken()}`,
+          'Authorization': `Bearer ${await getToken()}`,
         },
       });
 
@@ -35,7 +36,7 @@ export const useUserSync = () => {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${await clerkUser.getToken()}`,
+            'Authorization': `Bearer ${await getToken()}`,
           },
           body: JSON.stringify({
             clerkId: clerkUser.id,

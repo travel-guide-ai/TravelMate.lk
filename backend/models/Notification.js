@@ -147,7 +147,7 @@ const notificationSchema = new mongoose.Schema(
     },
     expiresAt: {
       type: Date,
-      index: true,
+      // index: true, // Removed duplicate index - using explicit TTL index below
     },
     groupKey: {
       type: String, // For grouping similar notifications
