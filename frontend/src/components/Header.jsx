@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Menu, User, LogOut } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useUser, useClerk } from '@clerk/clerk-react';
+import NotificationBell from './NotificationBell';
 
 const navLinks = [
   { name: 'Destinations', href: '#' },
@@ -46,19 +47,23 @@ export default function Header() {
 
         <div className="flex items-center space-x-4">
           {isLoaded && isSignedIn ? (
-            // Authenticated user menu
-            <div className="relative">
-              <button
-                onClick={() => setUserMenuOpen(!userMenuOpen)}
-                className="flex items-center space-x-2 px-4 py-2 rounded-full text-blue-200 hover:bg-blue-900/30 hover:text-white transition font-semibold"
-              >
-                {user.imageUrl ? (
-                  <img src={user.imageUrl} alt={user.fullName} className="w-8 h-8 rounded-full" />
-                ) : (
-                  <User className="w-5 h-5" />
-                )}
-                <span className="hidden md:block">{user.firstName || 'User'}</span>
-              </button>
+            <>
+              {/* Notification Bell */}
+              <NotificationBell />
+              
+              {/* Authenticated user menu */}
+              <div className="relative">
+                <button
+                  onClick={() => setUserMenuOpen(!userMenuOpen)}
+                  className="flex items-center space-x-2 px-4 py-2 rounded-full text-blue-200 hover:bg-blue-900/30 hover:text-white transition font-semibold"
+                >
+                  {user.imageUrl ? (
+                    <img src={user.imageUrl} alt={user.fullName} className="w-8 h-8 rounded-full" />
+                  ) : (
+                    <User className="w-5 h-5" />
+                  )}
+                  <span className="hidden md:block">{user.firstName || 'User'}</span>
+                </button>
               
               {userMenuOpen && (
                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10">
@@ -87,7 +92,8 @@ export default function Header() {
                   </button>
                 </div>
               )}
-            </div>
+              </div>
+            </>
           ) : (
             // Guest user buttons
             <>
