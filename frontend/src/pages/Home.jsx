@@ -8,8 +8,12 @@ import GlobalSearchBar from '../components/GlobalSearchBar';
 import FeaturedCarousel from '../components/FeaturedCarousel';
 import CategoriesPromotions from '../components/CategoriesPromotions';
 import Testimonials from '../components/Testimonials';
+import { useUserSync } from '../hooks/useUserSync';
 
 function Home() {
+  // Auto-sync authenticated users to MongoDB
+  const { syncStatus } = useUserSync();
+
   // Hero slideshow images (Sri Lankan destinations)
   const heroSlides = [
     {
