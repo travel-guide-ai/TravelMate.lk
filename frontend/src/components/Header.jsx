@@ -66,6 +66,9 @@ export default function Header() {
                     <p className="font-medium">{user.fullName}</p>
                     <p className="text-gray-500">{user.primaryEmailAddress?.emailAddress}</p>
                   </div>
+                  <Link to="/dashboard" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                    Dashboard
+                  </Link>
                   <Link to="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                     Profile
                   </Link>
