@@ -4,8 +4,17 @@ import User from '../models/User.js';
 const webhookSecret = process.env.CLERK_WEBHOOK_SECRET;
 
 export const clerkWebhookHandler = async (req, res) => {
-  if (!webhookSecret) {
-    throw new Error('Please add CLERK_WEBHOOK_SECRET from Clerk Dashboard to .env');
+  console.log('Webhook received:', {
+    headers: req.headers,
+    hasSecret: !!webhookSecret
+  });
+
+  if (!webhookSecret || webhookSecret === 'whsec_your_webhook_secret_here') {
+    console.error('CLERK_WEBHOOK_SECRET not configured properly');
+    return res.status(500).json({
+      success: false,
+      message: 'Webhook secret not configured. Please check WEBHOOK_SETUP.md',
+    });
   }
 
   // Get the headers
@@ -14,8 +23,11 @@ export const clerkWebhookHandler = async (req, res) => {
   const svix_timestamp = headerPayload['svix-timestamp'];
   const svix_signature = headerPayload['svix-signature'];
 
+  console.log('Webhook headers:', { svix_id, svix_timestamp, svix_signature });
+
   // If there are no headers, error out
   if (!svix_id || !svix_timestamp || !svix_signature) {
+    console.error('Missing svix headers');
     return res.status(400).json({
       success: false,
       message: 'Error occured -- no svix headers',
@@ -30,6 +42,8 @@ export const clerkWebhookHandler = async (req, res) => {
     body = JSON.stringify(req.body);
   }
 
+  console.log('Webhook body received:', body);
+
   // Create a new Svix instance with your secret.
   const wh = new Webhook(webhookSecret);
 
@@ -42,11 +56,13 @@ export const clerkWebhookHandler = async (req, res) => {
       'svix-timestamp': svix_timestamp,
       'svix-signature': svix_signature,
     });
+    console.log('Webhook verification successful');
   } catch (err) {
     console.error('Error verifying webhook:', err);
     return res.status(400).json({
       success: false,
-      message: 'Error occured',
+      message: 'Webhook verification failed',
+      error: err.message
     });
   }
 
@@ -62,31 +78,40 @@ export const clerkWebhookHandler = async (req, res) => {
   const { id } = eventData;
   const eventType = evt.type;
 
+  console.log(`Processing webhook: ${eventType} for user ${id}`);
+
   try {
     switch (eventType) {
       case 'user.created':
+        console.log('Handling user.created event');
         await handleUserCreated(eventData);
         break;
       case 'user.updated':
+        console.log('Handling user.updated event');
         await handleUserUpdated(eventData);
         break;
       case 'user.deleted':
+        console.log('Handling user.deleted event');
         await handleUserDeleted(eventData);
         break;
       default:
-        console.log(`Webhook with an ID of ${id} and type of ${eventType}`);
-        console.log('Webhook body:', body);
+        console.log(`Unhandled webhook type: ${eventType}`);
+        console.log('Event data:', eventData);
     }
 
+    console.log(`Webhook ${eventType} processed successfully`);
     return res.status(200).json({
       success: true,
-      message: 'Webhook received',
+      message: 'Webhook received and processed',
+      eventType,
+      userId: id
     });
   } catch (error) {
     console.error('Error handling webhook:', error);
     return res.status(500).json({
       success: false,
       message: 'Internal server error',
+      error: error.message
     });
   }
 };
@@ -102,19 +127,34 @@ const handleUserCreated = async (userData) => {
     image_url,
   } = userData;
 
+  console.log('Creating user with data:', {
+    id,
+    email_addresses: email_addresses?.length,
+    first_name,
+    last_name,
+    username
+  });
+
   try {
-    const primaryEmail = email_addresses.find(email => email.id === userData.primary_email_address_id);
+    const primaryEmail = email_addresses?.find(email => email.id === userData.primary_email_address_id);
+    
+    if (!primaryEmail) {
+      console.error('No primary email found for user:', id);
+      throw new Error('Primary email not found');
+    }
+
+    console.log('Primary email:', primaryEmail.email_address);
     
     const newUser = new User({
       clerkId: id,
-      email: primaryEmail?.email_address,
-      emailVerified: primaryEmail?.verification?.status === 'verified',
+      email: primaryEmail.email_address,
+      emailVerified: primaryEmail.verification?.status === 'verified',
       profile: {
-        firstName: first_name,
-        lastName: last_name,
-        username: username,
-        phoneNumber: phone_numbers?.[0]?.phone_number,
-        avatar: image_url,
+        firstName: first_name || '',
+        lastName: last_name || '',
+        username: username || '',
+        phoneNumber: phone_numbers?.[0]?.phone_number || '',
+        avatar: image_url || '',
       },
       settings: {
         emailNotifications: true,
@@ -124,10 +164,16 @@ const handleUserCreated = async (userData) => {
       lastActive: new Date(),
     });
 
-    await newUser.save();
-    console.log('User created successfully:', newUser._id);
+    const savedUser = await newUser.save();
+    console.log('User created successfully in MongoDB:', {
+      _id: savedUser._id,
+      clerkId: savedUser.clerkId,
+      email: savedUser.email
+    });
+    
+    return savedUser;
   } catch (error) {
-    console.error('Error creating user:', error);
+    console.error('Error creating user in MongoDB:', error);
     throw error;
   }
 };

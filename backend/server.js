@@ -5,6 +5,7 @@ import mongoose from "mongoose";
 import authRouter from "./routes/authRoutes.js";
 import webhookRoutes from "./routes/webhookRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
+import testRoutes from "./routes/testRoutes.js";
 dotenv.config();
 
 const app = express();
@@ -37,6 +38,7 @@ app.get("/", (req, res) => {
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/webhooks", webhookRoutes);
 app.use("/api/v1/users", userRoutes);
+app.use("/api/v1/test", testRoutes);
 
 app.listen(PORT, () => {
   console.log("Server is running...");
